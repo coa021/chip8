@@ -32,7 +32,15 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 
-add_executable(chip8 src/main.cpp)
+# headers
+set(CORE_HEADERS
+        include/core/types.hpp
+)
+
+add_executable(chip8
+        src/main.cpp
+        ${CORE_HEADERS}
+)
 
 target_link_libraries(chip8 PRIVATE raylib)
 target_include_directories(chip8 PRIVATE ${CMAKE_SOURCE_DIR}/include)
