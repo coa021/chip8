@@ -36,10 +36,14 @@ FetchContent_MakeAvailable(Catch2)
 set(CORE_HEADERS
         include/core/types.hpp
 )
+set(UTIL_HEADERS
+        include/utils/result.hpp
+)
 
 add_executable(chip8
         src/main.cpp
         ${CORE_HEADERS}
+        ${UTIL_HEADERS}
 )
 
 target_link_libraries(chip8 PRIVATE raylib)
