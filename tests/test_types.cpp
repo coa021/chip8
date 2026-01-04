@@ -1,6 +1,9 @@
 #include "catch2/catch_test_macros.hpp"
 #include "core/types.hpp"
 
+#include <bitset>
+#include <iostream>
+
 TEST_CASE("Hardware constants are correct", "[types][constants]") {
   REQUIRE(chip8::constants::MEMORY_SIZE == 4096);
   REQUIRE(chip8::constants::PROGRAM_START == 0x200);
@@ -71,10 +74,10 @@ TEST_CASE("chip8::bits::* functions work", "[types][bits]") {
   REQUIRE(chip8::bits::is_bit_set(b, 6) == false);
   REQUIRE(chip8::bits::is_bit_set(b, 7) == true);
 
-  REQUIRE(chip8::bits::msb(0x10000000) == true);
-  REQUIRE(chip8::bits::msb(0x01000001) == false);
-  REQUIRE(chip8::bits::lsb(0x10000001) == true);
-  REQUIRE(chip8::bits::lsb(0x01000010) == false);
+  REQUIRE(chip8::bits::msb(0b10000001) == true);
+  REQUIRE(chip8::bits::msb(0b01000001) == false);
+  REQUIRE(chip8::bits::lsb(0b01000001) == true);
+  REQUIRE(chip8::bits::lsb(0b01000010) == false);
 }
 
 
