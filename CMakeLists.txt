@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(FetchContent)
 
-
+# raylib fetch
 FetchContent_Declare(
         raylib
         GIT_REPOSITORY https://github.com/raysan5/raylib.git
@@ -22,12 +22,28 @@ set(OPENGL_VERSION "3.3" CACHE STRING "" FORCE)
 
 FetchContent_MakeAvailable(raylib)
 
-
-
-
-
+# catch2 fetch
+FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.12.0
+        GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(Catch2)
 
 
 add_executable(chip8 src/main.cpp)
 
-target_link_libraries(chip8 raylib)
+target_link_libraries(chip8 PRIVATE raylib)
+target_include_directories(chip8 PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+
+add_executable(tests
+        tests/testing.cpp)
+target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+enable_testing()
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+include(Catch)
+catch_discover_tests(tests)
