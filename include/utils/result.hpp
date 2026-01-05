@@ -268,7 +268,7 @@ public:
     return is_ok() ? &std::get<0>(m_Data) : nullptr;
   }
 
-  [[nodiscard]] T &operator*() { return value(); }
+  [[nodiscard]] T &operator*() & { return value(); }
   [[nodiscard]] const T &operator*() const & { return value(); }
   [[nodiscard]] T &&operator*() && { return std::move(*this).value(); }
 
