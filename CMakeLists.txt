@@ -38,6 +38,7 @@ set(CORE_HEADERS
 )
 set(UTIL_HEADERS
         include/utils/result.hpp
+        include/utils/logger.hpp
 )
 
 add_executable(chip8
