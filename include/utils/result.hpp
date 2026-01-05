@@ -272,10 +272,14 @@ public:
   [[nodiscard]] const T &operator*() const & { return value(); }
   [[nodiscard]] T &&operator*() && { return std::move(*this).value(); }
 
-  // map, transform success value propagate errors
+  /// Transforms the success value using func
+  /// @tparam F Callable
+  /// @param func Transformation function
+  /// @return New Result with transformed value or original error
   template <typename F>
     requires std::invocable<F, T &>
-  [[nodiscard]] auto map(F &&func) & -> Result<std::invoke_result<F, T &>, E> {
+  [[nodiscard]] auto
+  map(F &&func) & -> Result<std::invoke_result_t<F, T &>, E> {
     using U = std::invoke_result_t<F, T &>;
     if (is_ok())
       return Result<U, E>{
@@ -284,8 +288,192 @@ public:
     return Result<U, E>{error_tag{}, std::get<1>(m_Data)};
   }
 
+  template <typename F>
+    requires std::invocable<F, T &&>
+  [[nodiscard]] auto
+  map(F &&func) && -> Result<std::invoke_result_t<F, T &&>, E> {
+    using U = std::invoke_result_t<F, T &&>;
+    if (is_ok())
+      return Result<U, E>{
+          std::invoke(std::forward<F>(func), std::get<0>(std::move(m_Data)))};
+
+    return Result<U, E>{error_tag{}, std::get<1>(std::move(m_Data))};
+  }
+
+  /// Transforms the error using func
+  /// @tparam F Callable
+  /// @param func Eror transformation func
+  /// @return New Result with original value or transformed error
+  template <typename F>
+    requires std::invocable<F, E &>
+  [[nodiscard]] auto map_err(
+      F &&func) & -> Result<T, std::invoke_result_t<F, E &>> {
+    using U = std::invoke_result_t<F, E &>;
+    if (is_err())
+      return Result<T, U>{error_tag{},
+                          std::invoke(std::forward<F>(func),
+                                      std::get<1>(m_Data))};
+
+    return Result<T, U>{std::get<0>(m_Data)};
+  }
+
+  /// Chains operations that return Result, flattens nested Results
+  /// @tparam F Callable
+  /// @param func Function returning a new Result
+  /// @return Result returned by func or original error
+  template <typename F>
+    requires std::invocable<F, T &>
+  [[nodiscard]] auto and_then(F &&func) & -> std::invoke_result_t<F, T &> {
+    if (is_ok())
+      return std::invoke(std::forward<F>(func), std::get<0>(m_Data));
+
+    using ReturnType = std::invoke_result_t<F, T &>;
+    return ReturnType{error_tag{}, std::get<1>(m_Data)};
+  }
+
+  template <typename F>
+    requires std::invocable<F, T &&>
+  [[nodiscard]] auto and_then(F &&func) && -> std::invoke_result_t<F, T &&> {
+    if (is_ok())
+      return std::invoke(std::forward<F>(func), std::get<0>(std::move(m_Data)));
+
+    using ReturnType = std::invoke_result_t<F, T &&>;
+    return ReturnType{error_tag{}, std::get<1>(std::move(m_Data))};
+  }
+
+  /// Handles errors by calling func
+  /// @tparam F Callable
+  /// @param func Error handler returning a new Result
+  /// @return Original Ok, or the Result returned by func
+  template <typename F>
+    requires std::invocable<F, T &> && std::same_as<
+               std::invoke_result_t<F, E &>, Result<T, E>>
+  [[nodiscard]] Result<T, E> or_else(F &&func) & {
+    if (is_err())
+      return std::invoke(std::forward<F>(func), std::get<1>(m_Data));
+
+    return *this;
+  }
+
+  /// Calls func with the value if Result is Ok, does nothig if Error
+  /// @tparam F Callable that accepts const T&
+  /// @param func Function to call
+  /// @return Reference to this Result for chainig
+  template <typename F>
+    requires std::invocable<F, const T &>
+  Result &inspect(F &&func) & {
+    if (is_ok())
+      std::invoke(std::forward<F>(func), std::get<0>(m_Data));
+
+    return *this;
+  }
+
+  /// Calls func with the error if Error, does nothing if Ok
+  /// @tparam F Callable
+  /// @param func Function to call only if Error
+  /// @return Reference to *this for chaining
+  template <typename F>
+    requires std::invocable<F, const E &>
+  Result &inspect_err(F &&func) & {
+    if (is_err())
+      std::invoke(std::forward<F>(func), std::get<1>(m_Data));
+
+    return *this;
+  }
+
 private:
   std::variant<T, E> m_Data;
 };
+
+// void specialization
+template <typename E>
+class Result<void, E> {
+public:
+  struct success_tag {
+  };
+
+  struct error_tag {
+  };
+
+  Result() : m_Has_error{} {
+  }
+
+  Result(success_tag) : m_Has_error{false} {
+  }
+
+  Result(E error) : m_Error{std::move(error)}, m_Has_error{true} {
+  }
+
+  Result(error_tag, E error) : m_Error{std::move(error)}, m_Has_error{true} {
+  }
+
+  [[nodiscard]] constexpr bool is_ok() const noexcept { return !m_Has_error; }
+  [[nodiscard]] constexpr bool is_err() const noexcept { return m_Has_error; }
+
+  [[nodiscard]] E &error() & {
+    if (!m_Has_error)
+      throw std::runtime_error(
+          "Attempted to access error of successful Result");
+
+    return m_Error;
+  }
+
+  [[nodiscard]] const E &error() const & {
+    if (!m_Has_error)
+      throw std::runtime_error(
+          "Attempted to access error of successful Result");
+    return m_Error;
+  }
+
+  template <typename F>
+    requires std::invocable<F>
+  [[nodiscard]] auto and_then(F &&func) -> std::invoke_result_t<F> {
+    if (is_ok())
+      return std::invoke(std::forward<F>(func));
+
+    using ReturnType = std::invoke_result_t<F>;
+    return ReturnType{error_tag{}, m_Error};
+  }
+
+  template <typename F>
+    requires std::invocable<F, const E &>
+  Result &inspect_err(F &&func) {
+    if (is_err())
+      std::invoke(std::forward<F>(func), m_Error);
+    return *this;
+  }
+
+private:
+  E m_Error;
+  bool m_Has_error;
+};
+
+// Factory
+// success result
+template <typename T>
+[[nodiscard]] constexpr auto Ok(T &&value) {
+  return Result<std::decay_t<T>>{std::forward<T>(value)};
+}
+
+// void success result
+template <typename T>
+[[nodiscard]] inline auto Ok() { return Result<void>{}; };
+
+// error result
+template <typename T, typename E>
+[[nodiscard]] constexpr auto Err(E &&error) {
+  return Result<T, std::decay_t<E>>{
+      typename Result<T, std::decay_t<E>>::error_tag{}, std::forward<E>(error)};
+}
+
+
+// error result, deduced from error type
+template <typename E>
+[[nodiscard]] constexpr auto Err(E &&error) {
+  return Result<void, std::decay_t<E>>{
+      typename Result<void, std::decay_t<E>>::error_tag{},
+      std::forward<E>(error)};
+}
+
 
 }
