@@ -456,7 +456,6 @@ template <typename T>
 }
 
 // void success result
-template <typename T>
 [[nodiscard]] inline auto Ok() { return Result<void>{}; };
 
 // error result
