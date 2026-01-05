@@ -346,7 +346,7 @@ public:
   /// @param func Error handler returning a new Result
   /// @return Original Ok, or the Result returned by func
   template <typename F>
-    requires std::invocable<F, T &> && std::same_as<
+    requires std::invocable<F, E &> && std::same_as<
                std::invoke_result_t<F, E &>, Result<T, E>>
   [[nodiscard]] Result<T, E> or_else(F &&func) & {
     if (is_err())
