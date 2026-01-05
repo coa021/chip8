@@ -54,7 +54,8 @@ target_include_directories(chip8 PRIVATE ${CMAKE_SOURCE_DIR}/include)
 add_executable(tests
         tests/testing.cpp
         tests/test_types.cpp
-        tests/test_result.cpp)
+        tests/test_result.cpp
+        tests/test_logger.cpp)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
