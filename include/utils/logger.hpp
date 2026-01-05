@@ -65,7 +65,7 @@ public:
 
   [[nodiscard]] LogLevel level() const { return m_Config.min_level; }
 
-  template <typename Args>
+  template <typename... Args>
   void log(LogLevel level, std::source_location loc,
            std::format_string<Args...> fmt, Args &&... args) {
     if (level < m_Config.min_level)
@@ -103,37 +103,37 @@ public:
       out.flush();
   }
 
-  template <typename Args>
+  template <typename... Args>
   void trace(std::source_location loc, std::format_string<Args...> fmt,
              Args &&... args) {
     log(LogLevel::Trace, loc, fmt, std::forward<Args>(args)...);
   }
 
-  template <typename Args>
+  template <typename... Args>
   void debug(std::source_location loc, std::format_string<Args...> fmt,
              Args &&... args) {
     log(LogLevel::Debug, loc, fmt, std::forward<Args>(args)...);
   }
 
-  template <typename Args>
+  template <typename... Args>
   void info(std::source_location loc, std::format_string<Args...> fmt,
             Args &&... args) {
     log(LogLevel::Info, loc, fmt, std::forward<Args>(args)...);
   }
 
-  template <typename Args>
+  template <typename... Args>
   void warning(std::source_location loc, std::format_string<Args...> fmt,
                Args &&... args) {
     log(LogLevel::Warning, loc, fmt, std::forward<Args>(args)...);
   }
 
-  template <typename Args>
+  template <typename... Args>
   void error(std::source_location loc, std::format_string<Args...> fmt,
              Args &&... args) {
     log(LogLevel::Error, loc, fmt, std::forward<Args>(args)...);
   }
 
-  template <typename Args>
+  template <typename... Args>
   void fatal(std::source_location loc, std::format_string<Args...> fmt,
              Args &&... args) {
     log(LogLevel::Fatal, loc, fmt, std::forward<Args>(args)...);
