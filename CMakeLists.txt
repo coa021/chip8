@@ -41,6 +41,7 @@ set(UTIL_HEADERS
         include/utils/result.hpp
         include/utils/logger.hpp
         include/utils/rom_loader.hpp
+        include/utils/config.hpp
 )
 
 add_executable(chip8
