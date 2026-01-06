@@ -33,7 +33,6 @@ public:
     return Opcode{read_word(addr)};
   }
 
-  void validate_range(Address addr, std::size_t size) const;
 
   [[nodiscard]] MemoryView view(Address addr, std::size_t length) const {
     validate_range(addr, length);
@@ -63,8 +62,9 @@ public:
     if (rom_data.empty())
       return Error::io("ROM data is empty");
     if (rom_data.size() > max_rom_size)
-      return Error::io(std::format("ROM too large: {} bytes (max: {} bytes)",
-                                   rom_data.size(), max_rom_size));
+      return Error::memory(std::format(
+          "ROM too large: {} bytes (max: {} bytes)",
+          rom_data.size(), max_rom_size));
 
     // clear program area
     std::fill(m_Data.begin() + constants::PROGRAM_START, m_Data.end(), Byte{0});
@@ -93,6 +93,10 @@ public:
     return constants::MEMORY_SIZE;
   }
 
+  [[nodiscard]] std::size_t rom_size() const noexcept {
+    return m_Rom_size;
+  }
+
   // font access
   static constexpr Address font_sprite_address(Byte digit) noexcept {
     // each sprite is 5bytes
@@ -117,6 +121,15 @@ private:
       throw std::out_of_range(std::format(
           "Memory access out of bounds: ${:03X} (max: ${:03X})", addr.get(),
           constants::MEMORY_SIZE - 1));
+  }
+
+  static void validate_range(Address addr, std::size_t length) {
+    if (!is_valid_range(addr, length))
+      throw std::out_of_range(
+          std::format(
+              "Memory range out of bounds: ${:03X}-${:03X} (max: ${:03})",
+              addr.get(), addr.get() + length - 1, constants::MEMORY_SIZE - 1));
+
   }
 
   MemoryBuffer m_Data{};
