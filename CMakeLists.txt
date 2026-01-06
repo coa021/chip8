@@ -40,6 +40,7 @@ set(CORE_HEADERS
 set(UTIL_HEADERS
         include/utils/result.hpp
         include/utils/logger.hpp
+        include/utils/rom_loader.hpp
 )
 
 add_executable(chip8
@@ -57,7 +58,8 @@ add_executable(tests
         tests/test_types.cpp
         tests/test_result.cpp
         tests/test_logger.cpp
-        tests/test_memory.cpp)
+        tests/test_memory.cpp
+        tests/test_rom_loader.cpp)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
@@ -65,3 +67,10 @@ enable_testing()
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
 catch_discover_tests(tests)
+
+
+add_custom_command(TARGET chip8 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/roms
+        $<TARGET_FILE_DIR:chip8>/roms
+)
