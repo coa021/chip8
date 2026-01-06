@@ -36,6 +36,7 @@ FetchContent_MakeAvailable(Catch2)
 set(CORE_HEADERS
         include/core/types.hpp
         include/core/memory.hpp
+        include/core/instruction.hpp
 )
 set(UTIL_HEADERS
         include/utils/result.hpp
