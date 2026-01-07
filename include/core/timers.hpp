@@ -11,7 +11,7 @@ struct TimerState {
   Byte delay_timer{0};
   Byte sound_timer{0};
 
-  constexpr bool is_sound_active() const noexcept { return sound_timer > 0; }
+  [[nodiscard]] constexpr bool is_sound_active() const noexcept { return sound_timer > 0; }
 };
 
 class Timers {
@@ -28,9 +28,9 @@ public:
   Timers() : m_Last_tick{Clock::now()} {
   }
 
-  Byte delay() const noexcept { return m_State.delay_timer; }
-  Byte sound() const noexcept { return m_State.sound_timer; }
-  const TimerState &state() const noexcept { return m_State; }
+  [[nodiscard]] Byte delay() const noexcept { return m_State.delay_timer; }
+  [[nodiscard]] Byte sound() const noexcept { return m_State.sound_timer; }
+  [[nodiscard]] const TimerState &state() const noexcept { return m_State; }
 
 
   void set_delay(Byte value) noexcept { m_State.delay_timer = value; }
@@ -52,7 +52,7 @@ public:
     const int ticks{static_cast<int>(elapsed / TICK_PERIOD)};
 
     if (ticks > 0) {
-      m_Last_tick += std::chrono::duration<Clock::duration>(
+      m_Last_tick += std::chrono::duration_cast<Clock::duration>(
           Duration{ticks * TICK_PERIOD.count()});
 
       decrement_timers(ticks);
