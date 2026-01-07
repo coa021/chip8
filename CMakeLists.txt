@@ -61,7 +61,8 @@ add_executable(tests
         tests/test_result.cpp
         tests/test_logger.cpp
         tests/test_memory.cpp
-        tests/test_rom_loader.cpp)
+        tests/test_rom_loader.cpp
+        tests/test_instruction.cpp)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
