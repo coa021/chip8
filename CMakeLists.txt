@@ -37,6 +37,8 @@ set(CORE_HEADERS
         include/core/types.hpp
         include/core/memory.hpp
         include/core/instruction.hpp
+        include/core/cpu.hpp
+        include/core/timers.hpp
 )
 set(UTIL_HEADERS
         include/utils/result.hpp
@@ -62,7 +64,8 @@ add_executable(tests
         tests/test_logger.cpp
         tests/test_memory.cpp
         tests/test_rom_loader.cpp
-        tests/test_instruction.cpp)
+        tests/test_instruction.cpp
+        tests/test_timers.cpp)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
