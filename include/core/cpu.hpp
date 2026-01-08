@@ -289,7 +289,7 @@ private:
     const Word offset{
         m_Config.jump_quirk
           ? reg(opcode_bits::x_reg(Opcode{i.address.get()})).get()
-          : reg(RegisterIndex{0}.get())};
+          : reg(RegisterIndex{0}).get()};
 
     m_State.program_counter = Address{
         static_cast<Word>(i.address.get() + offset)};
@@ -321,7 +321,7 @@ private:
   /// EX9E skip if key pressed
   Result<void> execute_impl(const instructions::SkipIfKeyPressed &i) {
     if (m_Key_check) {
-      const KeyIndex key{static_cast<Byte>(reg(i.reg.get() & 0x0F))};
+      const KeyIndex key{static_cast<Byte>(reg(i.reg).get() & 0x0F)};
       if (m_Key_check(key))
         skip_instruction();
     }
@@ -331,7 +331,7 @@ private:
   /// EXA1 skip if key not pressed
   Result<void> execute_impl(const instructions::SkipIfKeyNotPressed &i) {
     if (m_Key_check) {
-      const KeyIndex key{static_cast<Byte>(reg(i.reg.get() & 0x0F))};
+      const KeyIndex key{static_cast<Byte>(reg(i.reg).get() & 0x0F)};
       if (!m_Key_check(key))
         skip_instruction();
     } else {
@@ -394,7 +394,7 @@ private:
 
   /// FX55 store registers V0-VX
   Result<void> execute_impl(const instructions::StoreRegisters &i) {
-    for (Byte reg_idx{0}; regidx <= i.max_reg.get(); ++reg_idx) {
+    for (Byte reg_idx{0}; reg_idx <= i.max_reg.get(); ++reg_idx) {
       m_Memory.write(Address{static_cast<Word>(m_State.index.get() + reg_idx)},
                      m_State.registers[reg_idx].get());
     }
@@ -408,7 +408,7 @@ private:
 
   /// FX65 load registers V0-VX
   Result<void> execute_impl(const instructions::LoadRegisters &i) {
-    for (Byte reg_idx{0}; regidx <= i.max_reg.get(); ++reg_idx) {
+    for (Byte reg_idx{0}; reg_idx <= i.max_reg.get(); ++reg_idx) {
       m_State.registers[reg_idx] = RegisterValue{
           m_Memory.read(
               Address{static_cast<Word>(m_State.index.get() + reg_idx)})};
