@@ -312,7 +312,9 @@ constexpr Instruction decode(Opcode opcode) noexcept {
   case 0x4:
     return SkipIfNotEqual{x, nn_val};
   case 0x5:
-    return (n_val == 0) ? SkipIfRegistersEqual{x, y} : Unknown{opcode};
+    if (n_val == 0)
+      return SkipIfRegistersEqual{x, y};
+    return Unknown{opcode};
 
   case 0x6:
     return LoadImmediate{x, nn_val};
@@ -344,7 +346,9 @@ constexpr Instruction decode(Opcode opcode) noexcept {
     }
 
   case 0x9:
-    return (n_val == 0) ? SkipIfRegistersNotEqual{x, y} : Unknown{opcode};
+    if (n_val == 0)
+      return SkipIfRegistersNotEqual{x, y};
+    return   Unknown{opcode};
 
   case 0xA:
     return LoadIndex{nnn_val};
