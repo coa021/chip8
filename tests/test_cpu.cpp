@@ -107,3 +107,55 @@ TEST_CASE_METHOD(CpuTestClass, "BCD conversion", "[cpu][instruction]") {
   REQUIRE(memory.read(Address{0x301}) == 5);
   REQUIRE(memory.read(Address{0x302}) == 5);
 }
+
+TEST_CASE("Shift quirk mode", "[cpu][quirk]") {
+  Memory memory;
+  Timers timers;
+  CpuConfig config;
+  config.shift_quirk = true;
+  Cpu cpu{memory, timers, config};
+
+  std::vector<Byte> prog = {0x60, 0x0F, 0x61, 0xF0, 0x80, 0x16};
+  memory.load_rom(prog);
+
+  cpu.step();
+  cpu.step();
+  cpu.step();
+
+  // needs to shift V0, not V1
+  REQUIRE(cpu.reg(RegisterIndex{0}).get() == 0x07);
+}
+
+TEST_CASE("Load/store quirk mode", "[cpu][quirk]") {
+  Memory memory;
+  Timers timers;
+  CpuConfig config;
+  config.load_store_quirk = true;
+  Cpu cpu{memory, timers, config};
+
+  std::vector<Byte> prog = {0xA3, 0x00, 0x60, 0xAA, 0xF0, 0x55};
+  memory.load_rom(prog);
+
+  cpu.step();
+  cpu.step();
+  cpu.step();
+
+  // with quirk, I unchanged
+  REQUIRE(cpu.index().get() == 0x300);
+}
+
+TEST_CASE("Load/store without quirk modifies I", "[cpu][quirk]") {
+  Memory memory;
+  Timers timers;
+  Cpu cpu{memory, timers};
+
+  std::vector<Byte> prog = {0xA3, 0x00, 0x60, 0xAA, 0xF0, 0x55};
+  memory.load_rom(prog);
+
+  cpu.step();
+  cpu.step();
+  cpu.step();
+
+  // without quirk, I = 0x300 + 0 + 1 = 0x301
+  REQUIRE(cpu.index().get() == 0x301);
+}
