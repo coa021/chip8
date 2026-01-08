@@ -410,6 +410,8 @@ public:
   [[nodiscard]] constexpr bool is_ok() const noexcept { return !m_Has_error; }
   [[nodiscard]] constexpr bool is_err() const noexcept { return m_Has_error; }
 
+  constexpr explicit operator bool() const noexcept { return is_ok(); }
+
   [[nodiscard]] E &error() & {
     if (!m_Has_error)
       throw std::runtime_error(
