@@ -102,6 +102,20 @@ public:
     return execute(instr);
   }
 
+  Result<void> run(int cycles) {
+    for (int i{0}; i < cycles; ++i) {
+      auto result{step()};
+      if (!result)
+        return result;
+    }
+    return Ok();
+  }
+
+  void reset() noexcept {
+    m_State = CpuState{};
+    m_State.program_counter = Address{constants::PROGRAM_START};
+  }
+
 private:
   Result<void> execute(const Instruction &instr) {
     return std::visit([this](const auto &i) -> Result<void> {
