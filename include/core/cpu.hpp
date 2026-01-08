@@ -252,7 +252,7 @@ private:
   }
 
   /// 8XY7 VX=VY - VX, VF=not borrow
-  Result<void> execute_impl(const instructions::SubRegisters &i) {
+  Result<void> execute_impl(const instructions::SubRegistersReverse &i) {
     const Byte vx{reg(i.x).get()};
     const Byte vy{reg(i.y).get()};
     const Byte no_borrow{(vy >= vx) ? 1 : 0};
