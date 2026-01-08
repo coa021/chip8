@@ -46,11 +46,15 @@ set(UTIL_HEADERS
         include/utils/rom_loader.hpp
         include/utils/config.hpp
 )
+set(GRAPHIC_HEADERS
+        include/graphics/Display.hpp
+)
 
 add_executable(chip8
         src/main.cpp
         ${CORE_HEADERS}
         ${UTIL_HEADERS}
+        ${GRAPHIC_HEADERS}
 )
 
 target_link_libraries(chip8 PRIVATE raylib)
@@ -66,7 +70,8 @@ add_executable(tests
         tests/test_rom_loader.cpp
         tests/test_instruction.cpp
         tests/test_timers.cpp
-        tests/test_cpu.cpp)
+        tests/test_cpu.cpp
+        tests/test_display.cpp)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
