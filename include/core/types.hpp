@@ -280,4 +280,33 @@ constexpr Address nnn(Opcode op) noexcept {
   return Address{static_cast<Word>(op.get() & 0x0FFF)};
 }
 }
+
+
+struct Coordinate {
+  std::size_t x;
+  std::size_t y;
+
+  constexpr auto operator<=>(const Coordinate &) const noexcept = default;
+
+  /// convert to linear index in display buffer
+  [[nodiscard]] constexpr std::size_t to_index() const noexcept {
+    return y * constants::DISPLAY_WIDTH + x;
+  }
+
+  /// wrap coordinates to screen bounds
+  [[nodiscard]] constexpr Coordinate wrapped() const noexcept {
+    return {
+        x % constants::DISPLAY_WIDTH,
+        y % constants::DISPLAY_HEIGHT
+    };
+  }
+
+  /// from raw values with automatic wrapping
+  static constexpr Coordinate from_raw(Byte raw_x, Byte raw_y) noexcept {
+    return Coordinate{
+        static_cast<std::size_t>(raw_x) % constants::DISPLAY_WIDTH,
+        static_cast<std::size_t>(raw_y) % constants::DISPLAY_HEIGHT
+    };
+  }
+};
 }
