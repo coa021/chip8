@@ -48,16 +48,18 @@ public:
     const std::size_t wrapped_y{start_y % constants::DISPLAY_HEIGHT};
 
     for (std::size_t row{0}; row < sprite_data.size(); ++row) {
-      const std::size_t y{wrapped_y + row};
-      if (y >= constants::DISPLAY_HEIGHT)
-        break;
+      const std::size_t y{(wrapped_y + row) % constants::DISPLAY_HEIGHT};
+      // below code is used for clipping, which is newer chip8 implementation,
+      // older roms fail here, so ill remove clipping and go the wrapping route
+      // if (y >= constants::DISPLAY_HEIGHT)
+      // break;
 
       const Byte sprite_row{sprite_data[row]};
       for (std::size_t col{0}; col < 8; ++col) {
-        const std::size_t x{wrapped_x + col};
+        const std::size_t x{(wrapped_x + col) % constants::DISPLAY_WIDTH};
 
-        if (x >= constants::DISPLAY_WIDTH)
-          break;
+        // if (x >= constants::DISPLAY_WIDTH)
+        // break;
 
         const bool sprite_pixel{(sprite_row & (0x80 >> col)) != 0};
         if (sprite_pixel && xor_pixel(x, y, true))
