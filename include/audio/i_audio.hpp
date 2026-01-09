@@ -6,7 +6,7 @@ namespace chip8 {
 
 class IAudio {
 public:
-  ~IAudio() = default;
+  virtual ~IAudio() = default;
 
   virtual bool initialize() = 0;
   virtual void shutdown() = 0;
