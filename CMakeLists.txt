@@ -51,12 +51,16 @@ set(GRAPHIC_HEADERS
         include/graphics/renderer.hpp
         include/graphics/i_renderer.hpp
 )
+set(AUDIO_HEADERS
+        include/audio/i_audio.hpp
+)
 
 add_executable(chip8
         src/main.cpp
         ${CORE_HEADERS}
         ${UTIL_HEADERS}
         ${GRAPHIC_HEADERS}
+        ${AUDIO_HEADERS}
 )
 
 target_link_libraries(chip8 PRIVATE raylib)
