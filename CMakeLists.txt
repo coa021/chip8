@@ -48,6 +48,8 @@ set(UTIL_HEADERS
 )
 set(GRAPHIC_HEADERS
         include/graphics/Display.hpp
+        include/graphics/renderer.hpp
+        include/graphics/i_renderer.hpp
 )
 
 add_executable(chip8
