@@ -53,6 +53,7 @@ set(GRAPHIC_HEADERS
 )
 set(AUDIO_HEADERS
         include/audio/i_audio.hpp
+        include/audio/beeper.hpp
 )
 
 add_executable(chip8
