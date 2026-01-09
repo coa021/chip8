@@ -67,8 +67,8 @@ public:
     BeginTextureMode(m_Render_texture);
     ClearBackground(BLACK); // TODO: theming here too
 
-    for (std::size y{0}; y < constants::DISPLAY_HEIGHT; ++y) {
-      for (std::size x{0}; x < constants::DISPLAY_HEIGHT; ++x) {
+    for (std::size_t y{0}; y < constants::DISPLAY_HEIGHT; ++y) {
+      for (std::size_t x{0}; x < constants::DISPLAY_WIDTH; ++x) {
         if (buffer[y * constants::DISPLAY_WIDTH + x]) {
           DrawRectangle(
               static_cast<int>(x) * m_Scale,
