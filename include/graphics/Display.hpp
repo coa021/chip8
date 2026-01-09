@@ -120,7 +120,7 @@ public:
 
 private:
   DisplayBuffer m_Buffer{};
-  bool m_Dirty{false};
+  bool m_Dirty{true};
   UpdateCallback m_Update_callback;
 };
 
