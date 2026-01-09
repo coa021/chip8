@@ -115,18 +115,19 @@ private:
   }
 
   void draw_display_texture() {
-    const int tex_widht{m_Render_texture.texture.width};
+    const int tex_width{m_Render_texture.texture.width};
     const int tex_height{m_Render_texture.texture.height};
     const int screen_width{GetScreenWidth()};
     const int screen_height{GetScreenHeight()};
 
     const float scale_x{
-        static_cast<float>(screen_width) / static_cast<float>(tex_widht)};
+        static_cast<float>(screen_width) / static_cast<float>(tex_width)};
     const float scale_y{
         static_cast<float>(screen_height) / static_cast<float>(tex_height)};
     const float scale{std::min(scale_x, scale_y)};
-    const float dest_width{static_cast<float>(tex_widht) * m_Scale};
-    const float dest_height{static_cast<float>(tex_height) * m_Scale};
+
+    const float dest_width{static_cast<float>(tex_width) * scale};
+    const float dest_height{static_cast<float>(tex_height) * scale};
     const float dest_x{(static_cast<float>(screen_width) - dest_width) / 2.0f};
     const float dest_y
         {(static_cast<float>(screen_height) - dest_height) / 2.0f};
@@ -134,8 +135,8 @@ private:
     const Rectangle source{
         0.0f,
         static_cast<float>(tex_height),
-        static_cast<float>(tex_widht),
-        -static_cast<float>(tex_widht)
+        static_cast<float>(tex_width),
+        -static_cast<float>(tex_height)
     };
     const Rectangle dest{
         dest_x,
@@ -145,7 +146,7 @@ private:
     };
     const Color white_color{255, 255, 255, 255};
     DrawTexturePro(m_Render_texture.texture, source, dest, {0, 0}, 0.0f,
-                   white_color);
+                   WHITE);
   }
 
   int m_Scale;
