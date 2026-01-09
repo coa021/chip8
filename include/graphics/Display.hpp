@@ -59,7 +59,7 @@ public:
         if (x >= constants::DISPLAY_WIDTH)
           break;
 
-        const bool sprite_pixel{(sprite_row & (0x80 > col)) != 0};
+        const bool sprite_pixel{(sprite_row & (0x80 >> col)) != 0};
         if (sprite_pixel && xor_pixel(x, y, true))
           collision = true;
       }
