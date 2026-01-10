@@ -55,13 +55,17 @@ set(AUDIO_HEADERS
         include/audio/i_audio.hpp
         include/audio/beeper.hpp
 )
-
+set(INPUT_HEADERS
+        include/input/i_input.hpp
+        include/input/keyboard.hpp
+)
 add_executable(chip8
         src/main.cpp
         ${CORE_HEADERS}
         ${UTIL_HEADERS}
         ${GRAPHIC_HEADERS}
         ${AUDIO_HEADERS}
+        ${INPUT_HEADERS}
 )
 
 target_link_libraries(chip8 PRIVATE raylib)
