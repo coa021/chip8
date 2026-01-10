@@ -75,7 +75,7 @@ public:
         LOG_WARNING("Failed to initialize audio, continuing without sound");
       } else {
         m_Audio.set_frequency(m_Config.beep_frequency);
-        m_Audio.set_frequency(m_Config.beep_volume);
+        m_Audio.set_volume(m_Config.beep_volume);
       }
     }
 
