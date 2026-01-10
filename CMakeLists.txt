@@ -46,6 +46,7 @@ set(UTIL_HEADERS
         include/utils/logger.hpp
         include/utils/rom_loader.hpp
         include/utils/config.hpp
+        include/utils/argument_parser.hpp
 )
 set(GRAPHIC_HEADERS
         include/graphics/Display.hpp
