@@ -20,6 +20,10 @@ public:
   std::size_t size() const noexcept { return m_Data.size(); }
   bool empty() const noexcept { return m_Data.empty(); }
 
+  std::span<const Byte> as_span() const noexcept {
+    return std::span<const Byte>(m_Data);
+  }
+
   auto begin() noexcept { return m_Data.begin(); }
   auto end() noexcept { return m_Data.end(); }
 
@@ -41,7 +45,7 @@ public:
           Error::io(std::format("File not found: {}", path.string()))};
 
     const auto file_size{std::filesystem::file_size(path)};
-     if (file_size == 0)
+    if (file_size == 0)
       return Result<RomData>{Error::io("ROM file is empty")};
     if (file_size > MAX_ROM_SIZE)
       return Result<RomData>{
