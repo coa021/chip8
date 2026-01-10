@@ -6,6 +6,7 @@
 #include "graphics/Display.hpp"
 #include "graphics/renderer.hpp"
 #include "input/keyboard.hpp"
+#include "input/raylib_key_provider.hpp"
 #include "utils/config.hpp"
 #include "utils/rom_loader.hpp"
 
@@ -46,7 +47,7 @@ public:
       m_Renderer{
           config.display_scale},
       m_Audio{},
-      m_Keyboard{} {
+      m_Keyboard{std::make_shared<RaylibKeyProvider>()} {
     setup_callbacks();
   }
 
@@ -169,7 +170,7 @@ public:
     if (!m_Current_ROM_path.empty()) {
       m_Memory.clear_program_area();
       auto rom_result{RomLoader::load(m_Current_ROM_path)};
-      if (!rom_result)
+      if (rom_result)
         m_Memory.load_rom(rom_result->as_span());
     }
 
@@ -231,7 +232,7 @@ public:
 private:
   void setup_callbacks() {
     m_Cpu.set_draw([this](Byte x, Byte y, MemoryView sprite) -> bool {
-      return m_Display.draw_sprite(x, y, sprite)
+      return m_Display.draw_sprite(x, y, sprite);
     });
 
     m_Cpu.set_clear_display([this]() { m_Display.clear(); });
@@ -257,14 +258,14 @@ private:
     m_Keyboard.update();
 
     // check custom keybinds
-    if (Keyboard::is_quit_pressed())
+    if (m_Keyboard.is_quit_pressed())
       m_State = EmulatorState::Stopped;
-    else if (Keyboard::is_pause_pressed())
+    else if (m_Keyboard.is_pause_pressed())
       toggle_pause();
-    else if (Keyboard::is_reset_pressed()) {
+    else if (m_Keyboard.is_reset_pressed()) {
       reset();
       run();
-    } else if (Keyboard::is_fullscreen_pressed())
+    } else if (m_Keyboard.is_fullscreen_pressed())
       toggle_fullscreen();
   }
 
