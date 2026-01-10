@@ -4,8 +4,6 @@
 #include "key_codes.hpp"
 
 #include <memory>
-#include <raylib.h>
-
 
 namespace chip8 {
 
@@ -80,7 +78,7 @@ public:
 
   KeyIndex wait_for_key() override {
     // blocking code
-    while (!WindowShouldClose()) {
+    while (!m_Provider->should_quit()) {
       for (const auto &mapping : m_Mappings) {
         if (m_Provider->is_key_pressed(mapping.platform_key))
           return KeyIndex{mapping.chip8_key};
