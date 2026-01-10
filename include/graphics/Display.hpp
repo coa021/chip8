@@ -114,7 +114,7 @@ public:
   static constexpr Coordinate index_to_coords(std::size_t index) noexcept {
     return {
         index % constants::DISPLAY_WIDTH,
-        index / constants::DISPLAY_HEIGHT
+        index / constants::DISPLAY_WIDTH
     };
   }
 
