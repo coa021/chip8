@@ -58,6 +58,8 @@ set(AUDIO_HEADERS
 set(INPUT_HEADERS
         include/input/i_input.hpp
         include/input/keyboard.hpp
+        include/input/key_codes.hpp
+        include/input/raylib_key_provider.hpp
 )
 add_executable(chip8
         src/main.cpp
@@ -82,7 +84,9 @@ add_executable(tests
         tests/test_instruction.cpp
         tests/test_timers.cpp
         tests/test_cpu.cpp
-        tests/test_display.cpp)
+        tests/test_display.cpp
+        tests/test_keyboard.cpp)
+
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
