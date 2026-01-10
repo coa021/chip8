@@ -357,7 +357,7 @@ constexpr Instruction decode(Opcode opcode) noexcept {
   case 0xC:
     return Random{x, nn_val};
   case 0xD:
-    return Draw{x, y, nn_val};
+    return Draw{x, y, n_val};
 
   case 0xE:
     switch (nn_val) {
