@@ -39,6 +39,7 @@ set(CORE_HEADERS
         include/core/instruction.hpp
         include/core/cpu.hpp
         include/core/timers.hpp
+        include/core/emulator.hpp
 )
 set(UTIL_HEADERS
         include/utils/result.hpp
