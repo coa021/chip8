@@ -4,6 +4,7 @@
 #include "memory.hpp"
 #include "timers.hpp"
 #include "types.hpp"
+#include "utils/logger.hpp"
 
 #include <random>
 
@@ -83,6 +84,8 @@ public:
         if (auto key{m_Key_wait()}) {
           m_State.registers[m_State.key_register.get()] = RegisterValue{
               key->get()};
+          m_State.waiting_for_key = false;
+          return Ok();
         } else {
           return Ok(); // no instruction
         }
@@ -92,6 +95,7 @@ public:
     }
 
     const Opcode opcode{m_Memory.read_opcode(m_State.program_counter)};
+    LOG_DEBUG("PC: ${:04X}  OP: ${:04X}", m_State.program_counter.get(), opcode.get());
 
     const Instruction instr{decode(opcode)};
 
@@ -272,7 +276,7 @@ private:
 
   /// 9XY0 skip if VX not equals VY
   Result<void> execute_impl(const instructions::SkipIfRegistersNotEqual &i) {
-    if (reg(i.x).get() != reg(i.x).get())
+    if (reg(i.x).get() != reg(i.y).get())
       skip_instruction();
 
     return Ok();
