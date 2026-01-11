@@ -70,11 +70,11 @@ public:
     for (std::size_t y{0}; y < constants::DISPLAY_HEIGHT; ++y) {
       for (std::size_t x{0}; x < constants::DISPLAY_WIDTH; ++x) {
         if (buffer[y * constants::DISPLAY_WIDTH + x]) {
-          DrawRectangle(
-              static_cast<int>(x) * m_Scale,
-              static_cast<int>(y) * m_Scale,
-              m_Scale,
-              m_Scale,
+          DrawPixel(
+              static_cast<int>(x), // * m_Scale,
+              static_cast<int>(y), //* m_Scale,
+              // m_Scale,
+              // m_Scale,
               GREEN); // TODO: theming here too
         }
       }
@@ -91,23 +91,51 @@ public:
 
   void set_scale(int scale) override {
     m_Scale = std::clamp(scale, MIN_SCALE, MAX_SCALE);
-    if (m_Initialized)
-      create_render_texture();
+    if (m_Initialized && !m_Fullscreen) {
+      SetWindowSize(static_cast<int>(constants::DISPLAY_WIDTH) * m_Scale,
+                    static_cast<int>(constants::DISPLAY_HEIGHT) * m_Scale
+          );
+    }
+    // create_render_texture();
   }
 
   int get_scale() const override { return m_Scale; }
   int get_window_width() const override { return GetScreenWidth(); }
   int get_window_height() const override { return GetScreenHeight(); }
   void set_title(const char *title) override { SetWindowTitle(title); }
-  void toggle_fullscreen() override { ToggleFullscreen(); }
+
+  void toggle_fullscreen() override {
+    m_Fullscreen = !m_Fullscreen;
+
+    if (m_Fullscreen) {
+      m_Windowed_width = GetScreenWidth();
+      m_Windowed_height = GetScreenHeight();
+
+      const int monitor{GetCurrentMonitor()};
+      SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
+      SetWindowPosition(0, 0);
+      ToggleBorderlessWindowed();
+    } else {
+      ToggleBorderlessWindowed();
+      SetWindowSize(m_Windowed_width, m_Windowed_height);
+
+      const int monitor{GetCurrentMonitor()};
+      const int mon_width{GetMonitorWidth(monitor)};
+      const int mon_height{GetMonitorHeight(monitor)};
+      SetWindowPosition((mon_width - m_Windowed_width) / 2,
+                        (mon_height - m_Windowed_height) / 2);
+    }
+  }
+
+  bool is_fullscreen() const { return m_Fullscreen; }
 
 private:
   void create_render_texture() {
     if (m_Render_texture.id != 0)
       UnloadRenderTexture(m_Render_texture);
 
-    const int width{static_cast<int>(constants::DISPLAY_WIDTH) * m_Scale};
-    const int height{static_cast<int>(constants::DISPLAY_HEIGHT) * m_Scale};
+    const int width{static_cast<int>(constants::DISPLAY_WIDTH)};
+    const int height{static_cast<int>(constants::DISPLAY_HEIGHT)};
 
     m_Render_texture = LoadRenderTexture(width, height);
     SetTextureFilter(m_Render_texture.texture, TEXTURE_FILTER_POINT);
@@ -152,7 +180,9 @@ private:
   int m_Scale;
   RenderTexture2D m_Render_texture{};
   bool m_Initialized{false};
-
+  bool m_Fullscreen{false};
+  int m_Windowed_height{0};
+  int m_Windowed_width{0};
 };
 
 }
