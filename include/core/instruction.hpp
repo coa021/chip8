@@ -41,7 +41,7 @@ struct SkipIfEqual {
   static constexpr std::string_view mnemonic() noexcept { return "SE"; }
 };
 
-/// 3XNN Skip if VX not equals NN
+/// 4XNN Skip if VX not equals NN
 struct SkipIfNotEqual {
   RegisterIndex reg;
   Byte value;
