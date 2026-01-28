@@ -24,5 +24,3 @@ cd build && ctest --output-on-failure
 ## Showcase
 Below is screenshot of Pong game successfully running (ROM is available in roms/ directory):  
 ![img.png](img.png)
-
-## Controls
